@@ -1,17 +1,102 @@
-import * as React from "react";
+import React, { useReducer, useRef, useEffect } from "react";
+import { wishes, Wish } from "./data";
+
+interface State {
+  wishList: Wish[];
+  currentWish: Wish | undefined;
+  isVisible: boolean;
+  isComplete: boolean;
+}
+
+interface SendWish {
+  type: "sendWish";
+}
+interface SetVisibility {
+  type: "visible";
+  payload: boolean;
+}
+interface SetComplete {
+  type: "complete";
+}
+
+type Actions = SendWish | SetVisibility | SetComplete;
+
+function reducer(state: State, action: Actions): State {
+  console.log({ state, action });
+  switch (action.type) {
+    case "sendWish": {
+      const copy = shuffle([...state.wishList]);
+
+      return {
+        currentWish: copy.pop(),
+        wishList: copy,
+        isVisible: true,
+        isComplete: state.isComplete
+      };
+    }
+    case "visible": {
+      return { ...state, isVisible: action.payload };
+    }
+    case "complete": {
+      return { ...state, isComplete: true };
+    }
+    default:
+      return state;
+  }
+}
 
 export default function App() {
+  const timeout = useRef<any>();
+  const [state, dispatch] = useReducer(reducer, {
+    wishList: wishes,
+    currentWish: undefined,
+    isVisible: false,
+    isComplete: false
+  });
+
+  useEffect(() => {
+    if (state.isVisible === true && !state.isComplete) {
+      clearTimeout(timeout.current);
+      timeout.current = setTimeout(() => {
+        dispatch({ type: "visible", payload: false });
+        if (state.wishList.length === 0) {
+          dispatch({ type: "complete" });
+        }
+      }, 2500);
+    }
+  }, [state.isVisible, state.isComplete, dispatch]);
+
+  const hiddenCss = state.isVisible || state.isComplete ? "--hidden" : "";
+
+  const clickHandler = React.useCallback(
+    (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+      e.stopPropagation();
+      e.preventDefault();
+      dispatch({ type: "sendWish" });
+    },
+    [dispatch]
+  );
+
+  // const currentWish = wishList.current[idx];
+  const wishListDisplay = state.currentWish && (
+    <div>
+      <h5>{state.currentWish.name}</h5>
+      <p>{state.currentWish.message}</p>
+    </div>
+  );
+
   return (
     <>
       <div className="bday-message__wrapper">
-        <h1>> Happy Birthday Mom!</h1>
+        <h1> Happy Birthday Mom!</h1>
         <p>Click the cake to blow out your candle!</p>
         <div className="bday-message">
-          <h3 className="bday-message__text --hidden" />
+          {state.isVisible && !state.isComplete && wishListDisplay}
+          {state.isComplete && <h1>All done!</h1>}
         </div>
       </div>
 
-      <div className="cake">
+      <div className="cake" onClick={clickHandler}>
         <div className="plate" />
         <div className="layer layer-bottom" />
         <div className="layer layer-middle" />
@@ -21,26 +106,27 @@ export default function App() {
         <div className="drip drip2" />
         <div className="drip drip3" />
         <div className="candle">
-          <div className="flame" />
+          <div className={`flame ${hiddenCss}`} />
         </div>
       </div>
     </>
   );
 }
 
+function shuffle<T>(arr: T[]) {
+  let ci: number = arr.length,
+    randomIndex;
+
+  while (0 !== ci) {
+    randomIndex = Math.floor(Math.random() * ci);
+    ci -= 1;
+    [arr[ci], arr[randomIndex]] = [arr[randomIndex], arr[ci]];
+  }
+
+  return arr;
+}
+
 // document.addEventListener('DOMContentLoaded', () => new App());
-
-// function shuffle(arr: string[]) {
-//   let ci: number = arr.length, randomIndex;
-
-//   while (0 !== ci) {
-//     randomIndex = Math.floor(Math.random() * ci);
-//     ci -= 1;
-//     [arr[ci], arr[randomIndex]] = [arr[randomIndex], arr[ci]];
-//   }
-
-//   return arr;
-// }
 
 // class App {
 //   flame: HTMLElement;
