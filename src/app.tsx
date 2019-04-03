@@ -1,9 +1,9 @@
 import React, { useReducer, useRef, useEffect } from "react";
-import { wishes, Wish } from "./data";
+import { wishes, Wish, photoMap } from "./data";
 
 interface State {
   wishList: Wish[];
-  currentWish: Wish | undefined;
+  currentWish: Wish;
   isVisible: boolean;
   isComplete: boolean;
 }
@@ -19,6 +19,11 @@ interface SetComplete {
   type: "complete";
 }
 
+const initWish = {
+  name: "",
+  message: ""
+};
+
 type Actions = SendWish | SetVisibility | SetComplete;
 
 function reducer(state: State, action: Actions): State {
@@ -28,7 +33,7 @@ function reducer(state: State, action: Actions): State {
       const copy = shuffle([...state.wishList]);
 
       return {
-        currentWish: copy.pop(),
+        currentWish: copy.pop() || initWish,
         wishList: copy,
         isVisible: true,
         isComplete: state.isComplete
@@ -46,22 +51,22 @@ function reducer(state: State, action: Actions): State {
 }
 
 export default function App() {
-  const timeout = useRef<any>();
   const [state, dispatch] = useReducer(reducer, {
     wishList: wishes,
-    currentWish: undefined,
+    currentWish: initWish,
     isVisible: false,
     isComplete: false
   });
 
+  const timeout = useRef<any>();
   useEffect(() => {
     if (state.isVisible === true && !state.isComplete) {
       clearTimeout(timeout.current);
+      if (state.wishList.length === 0) {
+        dispatch({ type: "complete" });
+      }
       timeout.current = setTimeout(() => {
         dispatch({ type: "visible", payload: false });
-        if (state.wishList.length === 0) {
-          dispatch({ type: "complete" });
-        }
       }, 2500);
     }
   }, [state.isVisible, state.isComplete, dispatch]);
@@ -70,20 +75,29 @@ export default function App() {
 
   const clickHandler = React.useCallback(
     (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-      e.stopPropagation();
-      e.preventDefault();
       dispatch({ type: "sendWish" });
     },
     [dispatch]
   );
 
-  // const currentWish = wishList.current[idx];
-  const wishListDisplay = state.currentWish && (
-    <div>
-      <h5>{state.currentWish.name}</h5>
-      <p>{state.currentWish.message}</p>
+  const showWish = state.isVisible && !state.isComplete ? "" : "--hidden";
+
+  const wishListDisplay = (
+    <div className={`wish-card ${showWish}`}>
+      <img className="wish-card__img" src={photoMap[state.currentWish.name]} />
+      <div className="wish-card__content">
+        <h5>{state.currentWish.name} says:</h5>
+        <p>"{state.currentWish.message}"</p>
+      </div>
     </div>
   );
+
+  const handleCount = () => {
+    if (state.wishList.length > 60) {
+      return state.wishList.length - 60;
+    }
+    return state.wishList.length;
+  };
 
   return (
     <>
@@ -91,7 +105,7 @@ export default function App() {
         <h1> Happy Birthday Mom!</h1>
         <p>Click the cake to blow out your candle!</p>
         <div className="bday-message">
-          {state.isVisible && !state.isComplete && wishListDisplay}
+          {wishListDisplay}
           {state.isComplete && <h1>All done!</h1>}
         </div>
       </div>
@@ -101,7 +115,9 @@ export default function App() {
         <div className="layer layer-bottom" />
         <div className="layer layer-middle" />
         <div className="layer layer-top" />
-        <div className="icing" />
+        <div className="icing">
+          <div className="wish-count">{handleCount()}</div>
+        </div>
         <div className="drip drip1" />
         <div className="drip drip2" />
         <div className="drip drip3" />
