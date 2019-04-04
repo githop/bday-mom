@@ -141,7 +141,7 @@ export default function App() {
   return (
     <>
       <div className='bday-message__wrapper'>
-        <h1> Happy Birthday Mom!</h1>
+        <h1>60 reasons why we love you!</h1>
         <p>Click the cake to blow out your candle!</p>
         <div className='bday-message'>
           {animatedWish}
