@@ -1,46 +1,41 @@
 import React, { useReducer, useRef, useEffect } from 'react';
 import { wishes, Wish, photoMap } from './data';
+import { animated, config, useTransition } from 'react-spring';
 
 interface State {
   wishList: Wish[];
-  currentWish: Wish;
-  isVisible: boolean;
+  wishQueue: Wish[];
   isComplete: boolean;
 }
 
 interface SendWish {
   type: 'sendWish';
 }
-interface SetVisibility {
-  type: 'visible';
-  payload: boolean;
+interface RemoveWish {
+  type: 'removeWish';
 }
 interface SetComplete {
   type: 'complete';
 }
 
-const initWish = {
-  name: '',
-  message: ''
-};
-
-type Actions = SendWish | SetVisibility | SetComplete;
+type Actions = SendWish | RemoveWish | SetComplete;
 
 function reducer(state: State, action: Actions): State {
-  console.log({ state, action });
+  console.log(action.type, { state });
   switch (action.type) {
     case 'sendWish': {
       const copy = shuffle([...state.wishList]);
-
+      const queuedWish = copy.pop();
       return {
-        currentWish: copy.pop() || initWish,
+        ...state,
         wishList: copy,
-        isVisible: true,
-        isComplete: state.isComplete
+        wishQueue: state.wishQueue.concat(queuedWish || [])
       };
     }
-    case 'visible': {
-      return { ...state, isVisible: action.payload };
+    case 'removeWish': {
+      const wishQueue = [...state.wishQueue];
+      wishQueue.shift();
+      return { ...state, wishQueue };
     }
     case 'complete': {
       return { ...state, isComplete: true };
@@ -53,43 +48,88 @@ function reducer(state: State, action: Actions): State {
 export default function App() {
   const [state, dispatch] = useReducer(reducer, {
     wishList: wishes,
-    currentWish: initWish,
-    isVisible: false,
+    wishQueue: [],
     isComplete: false
   });
 
-  const timeout = useRef<any>();
+  const timeoutFn = useRef<any>(null);
   useEffect(() => {
-    if (state.isVisible === true && !state.isComplete) {
-      clearTimeout(timeout.current);
-      if (state.wishList.length === 0) {
+    if (state.wishQueue.length !== 0) {
+      if (state.wishQueue.length > 2) {
+        dispatch({ type: 'removeWish' });
+      }
+      const wordCount =
+        (state.wishQueue[state.wishQueue.length - 1].message.split(' ').length /
+          3.7) *
+        1000;
+      const timeoutLen = Math.max(
+        2500 * state.wishQueue.length,
+        3500,
+        wordCount
+      );
+      if (timeoutFn.current) {
+        clearTimeout(timeoutFn.current);
+      }
+      timeoutFn.current = setTimeout(() => {
+        dispatch({ type: 'removeWish' });
+      }, timeoutLen);
+    }
+  }, [state.wishQueue, dispatch]);
+
+  const wishTransition = useTransition(state.wishQueue, item => item.message, {
+    from: { transform: `translate(0, 100%) scale(0.1)`, opacity: 0 },
+    enter: { transform: `translate(0, 0%) scale(1)`, opacity: 1 },
+    leave: { transform: `translate(0, 100%) scale(0.1)`, opacity: 0 },
+    config: config.stiff,
+    onDestroyed: () => {
+      if (state.wishList.length === 0 && state.wishQueue.length === 0) {
         dispatch({ type: 'complete' });
       }
-      timeout.current = setTimeout(() => {
-        dispatch({ type: 'visible', payload: false });
-      }, 2500);
     }
-  }, [state.isVisible, state.isComplete, dispatch]);
+  });
 
-  const hiddenCss = state.isVisible || state.isComplete ? '--hidden' : '';
+  const endTransition = useTransition(state.isComplete, null, {
+    from: { transform: `translate(0, 200%)`, opacity: 0 },
+    enter: { transform: `translate(0, 0%)`, opacity: 0.8 },
+    leave: { transform: `translate(0, 100%)`, opacity: 0 },
+    config: config.slow
+  });
+
+  const hiddenCss =
+    state.wishQueue.length > 0 || state.wishList.length === 0 ? '--hidden' : '';
 
   const clickHandler = React.useCallback(
     (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-      dispatch({ type: 'sendWish' });
+      if (state.wishList.length > 0) {
+        dispatch({ type: 'sendWish' });
+      }
     },
-    [dispatch]
+    [state.wishList.length, state.wishQueue.length, dispatch]
   );
 
-  const showWish = state.isVisible && !state.isComplete ? '' : '--hidden';
+  const animatedWish = wishTransition.map(({ item, key, props }) => {
+    return (
+      item && (
+        <animated.div key={key} style={props} className={`wish-card`}>
+          <div className='wish-card__img'>
+            <img src={photoMap[item.name]} />
+          </div>
+          <div className='wish-card__content'>
+            <h5>{item.name} says:</h5>
+            <p>"{item.message}"</p>
+          </div>
+        </animated.div>
+      )
+    );
+  });
 
-  const wishListDisplay = (
-    <div className={`wish-card ${showWish}`}>
-      <img className='wish-card__img' src={photoMap[state.currentWish.name]} />
-      <div className='wish-card__content'>
-        <h5>{state.currentWish.name} says:</h5>
-        <p>"{state.currentWish.message}"</p>
-      </div>
-    </div>
+  const animatedEnd = endTransition.map(
+    ({ item, key, props }) =>
+      item && (
+        <animated.div key={key} style={props}>
+          <h1>Happy 60th Mom!</h1>
+        </animated.div>
+      )
   );
 
   const handleCount = () => {
@@ -105,8 +145,8 @@ export default function App() {
         <h1> Happy Birthday Mom!</h1>
         <p>Click the cake to blow out your candle!</p>
         <div className='bday-message'>
-          {wishListDisplay}
-          {state.isComplete && <h1>All done!</h1>}
+          {animatedWish}
+          {animatedEnd}
         </div>
       </div>
 
@@ -141,72 +181,3 @@ function shuffle<T>(arr: T[]) {
 
   return arr;
 }
-
-// document.addEventListener('DOMContentLoaded', () => new App());
-
-// class App {
-//   flame: HTMLElement;
-//   cake: HTMLElement;
-//   bdayMessage: HTMLElement;
-//   bdayMessages: string[] = [
-//     'Greg, Karen, and I love you! <span>♥</span>',
-//     'Be as loud as you want when eating! <span>🍽</span>',
-//     'You are a big impact on my life! <span>✨</span>',
-//     'Mom (your wife) is Awesome! <span>💏</span>',
-//     'Da Paw is loved by the grandkids! <span>👴</span>',
-//     'Great golfer! (hole in one in the bag) <span>🏌</span>',
-//     'You have great intiuition, personal and business <span>👁️‍🗨️</span>',
-//     'Oldest Brother and pillar of an amazing family <span>🏛</span>',
-//     'Great sense of humor! <span>🤣</span>',
-//     'Will ask funny questions when filming you <span>🎬</span>',
-//     'Loves speaking to strangers! <span>🙃</span>',
-//     'Always around for us as kids <span>👪</span>',
-//     'Fun to travel with! <span>🛫</span>'
-//   ];
-
-//   private _bdMsgQueue: string[] = [];
-//   private _timeout: number
-//   private _timeoutLn: number = 2500;
-
-//   constructor() {
-//     this.flame = <HTMLElement>document.querySelector('.flame');
-//     this.cake = <HTMLElement>document.querySelector('.cake');
-//     this.bdayMessage = <HTMLElement>document.querySelector('.bday-message__text');
-//     this._attachListeners();
-//   }
-
-//   onCakeClick(e): void {
-//     this.getBdayMessage();
-//     this._toggleVisibility();
-//   }
-
-//   getBdayMessage(): void {
-//     //reset if necessary
-//     if (this._bdMsgQueue.length === 0) {
-//       this._bdMsgQueue = [...this.bdayMessages];
-//     }
-//     //randomize list
-//     shuffle(this._bdMsgQueue);
-//     this.bdayMessage.innerHTML = this._bdMsgQueue.pop();
-//   }
-
-//   private _toggleVisibility(): void {
-
-//     if (this._timeout) {
-//       clearTimeout(this._timeout);
-//     }
-
-//     this.flame.classList.add('--hidden')
-//     this.bdayMessage.classList.remove('--hidden');
-
-//     this._timeout = setTimeout(() => {
-//       this.flame.classList.remove('--hidden');
-//       this.bdayMessage.classList.add('--hidden');
-//     }, this._timeoutLn);
-//   }
-
-//   private _attachListeners(): void {
-//     this.cake.addEventListener('click', (e) => this.onCakeClick(e));
-//   }
-
-// }

@@ -27,8 +27,8 @@ export const photoMap: Record<string, string> = {
 export const wishes: Wish[] = [
   { name: 'Greg', message: 'FaceTime with mom' },
   { name: 'Greg', message: "Mom's tidiness" },
-  { name: 'Katya', message: 'Her spontaneity' }
-  // { name: "Katya", message: "Her generosity" },
+  { name: 'Katya', message: 'Her spontaneity' },
+  { name: 'Katya', message: 'Her generosity' },
   // { name: "Freddy", message: "Playing with Grandlady" },
   // { name: "Rosamund", message: "Playing peek-a-boo" },
   // { name: "Adelaide", message: "Grandlady is nice..." },
@@ -38,21 +38,21 @@ export const wishes: Wish[] = [
   // { name: "Matilda", message: "she loves me" },
   // { name: "Matilda", message: "Grandlady has the same color hair as me" },
   // { name: "Karen", message: "My mom is my favorite woman in this world" },
-  // {
-  //   name: "Karen",
-  //   message:
-  //     "She is so caring, selfless, and always there to help her children and grandchildren"
-  // },
-  // {
-  //   name: "Karen",
-  //   message:
-  //     "My mom sets an example to follow of being positive and strong, getting things done and taking responsibility for one's own happiness."
-  // },
-  // {
-  //   name: "Karen",
-  //   message:
-  //     "Mom is so comforting - she understands who I am and I see her too. She knows what I need and tells me!"
-  // },
+  {
+    name: 'Karen',
+    message:
+      'She is so caring, selfless, and always there to help her children and grandchildren'
+  },
+  {
+    name: 'Karen',
+    message:
+      "My mom sets an example to follow of being positive and strong, getting things done and taking responsibility for one's own happiness."
+  },
+  {
+    name: 'Karen',
+    message:
+      'Mom is so comforting - she understands who I am and I see her too. She knows what I need and tells me!'
+  }
   // {
   //   name: "Nick",
   //   message:

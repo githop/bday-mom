@@ -83,7 +83,7 @@ body {
   justify-content: center;
   align-items: center;
   &:before {
-    content: "";
+    content: '';
     position: absolute;
     top: 4px;
     right: 5px;
@@ -138,7 +138,7 @@ body {
   margin-left: -8px;
   z-index: 10;
   &:before {
-    content: "";
+    content: '';
     position: absolute;
     top: 0;
     left: 0;
@@ -211,6 +211,13 @@ $borderRadius: 4px;
   color: $candle;
 }
 
+.bday-message {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 0.5rem;
+}
+
 .--hidden {
   opacity: 0;
 }
@@ -227,17 +234,24 @@ $borderRadius: 4px;
   flex-direction: row;
   justify-content: flex-start;
   align-items: center;
-  margin: 0 9rem;
-  padding: 0.5rem;
-  transition-duration: 0.3s;
+  // transition-duration: 0.3s;
   border: 2px dotted $chocolate;
   border-radius: $borderRadius;
+  width: 75%;
+  margin: 4px 0;
+  z-index: 100;
+  background-color: $vanilla;
 }
 
 .wish-card__img {
   width: 85px;
   height: 85px;
-  border-radius: $borderRadius;
+  align-self: flex-start;
+  img {
+    width: 85px;
+    height: 85px;
+    border-radius: $borderRadius;
+  }
 }
 
 .bday-message__header {
