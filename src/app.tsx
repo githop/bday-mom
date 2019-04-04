@@ -1,5 +1,5 @@
-import React, { useReducer, useRef, useEffect } from "react";
-import { wishes, Wish, photoMap } from "./data";
+import React, { useReducer, useRef, useEffect } from 'react';
+import { wishes, Wish, photoMap } from './data';
 
 interface State {
   wishList: Wish[];
@@ -9,19 +9,19 @@ interface State {
 }
 
 interface SendWish {
-  type: "sendWish";
+  type: 'sendWish';
 }
 interface SetVisibility {
-  type: "visible";
+  type: 'visible';
   payload: boolean;
 }
 interface SetComplete {
-  type: "complete";
+  type: 'complete';
 }
 
 const initWish = {
-  name: "",
-  message: ""
+  name: '',
+  message: ''
 };
 
 type Actions = SendWish | SetVisibility | SetComplete;
@@ -29,7 +29,7 @@ type Actions = SendWish | SetVisibility | SetComplete;
 function reducer(state: State, action: Actions): State {
   console.log({ state, action });
   switch (action.type) {
-    case "sendWish": {
+    case 'sendWish': {
       const copy = shuffle([...state.wishList]);
 
       return {
@@ -39,10 +39,10 @@ function reducer(state: State, action: Actions): State {
         isComplete: state.isComplete
       };
     }
-    case "visible": {
+    case 'visible': {
       return { ...state, isVisible: action.payload };
     }
-    case "complete": {
+    case 'complete': {
       return { ...state, isComplete: true };
     }
     default:
@@ -63,29 +63,29 @@ export default function App() {
     if (state.isVisible === true && !state.isComplete) {
       clearTimeout(timeout.current);
       if (state.wishList.length === 0) {
-        dispatch({ type: "complete" });
+        dispatch({ type: 'complete' });
       }
       timeout.current = setTimeout(() => {
-        dispatch({ type: "visible", payload: false });
+        dispatch({ type: 'visible', payload: false });
       }, 2500);
     }
   }, [state.isVisible, state.isComplete, dispatch]);
 
-  const hiddenCss = state.isVisible || state.isComplete ? "--hidden" : "";
+  const hiddenCss = state.isVisible || state.isComplete ? '--hidden' : '';
 
   const clickHandler = React.useCallback(
     (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-      dispatch({ type: "sendWish" });
+      dispatch({ type: 'sendWish' });
     },
     [dispatch]
   );
 
-  const showWish = state.isVisible && !state.isComplete ? "" : "--hidden";
+  const showWish = state.isVisible && !state.isComplete ? '' : '--hidden';
 
   const wishListDisplay = (
     <div className={`wish-card ${showWish}`}>
-      <img className="wish-card__img" src={photoMap[state.currentWish.name]} />
-      <div className="wish-card__content">
+      <img className='wish-card__img' src={photoMap[state.currentWish.name]} />
+      <div className='wish-card__content'>
         <h5>{state.currentWish.name} says:</h5>
         <p>"{state.currentWish.message}"</p>
       </div>
@@ -101,27 +101,27 @@ export default function App() {
 
   return (
     <>
-      <div className="bday-message__wrapper">
+      <div className='bday-message__wrapper'>
         <h1> Happy Birthday Mom!</h1>
         <p>Click the cake to blow out your candle!</p>
-        <div className="bday-message">
+        <div className='bday-message'>
           {wishListDisplay}
           {state.isComplete && <h1>All done!</h1>}
         </div>
       </div>
 
-      <div className="cake" onClick={clickHandler}>
-        <div className="plate" />
-        <div className="layer layer-bottom" />
-        <div className="layer layer-middle" />
-        <div className="layer layer-top" />
-        <div className="icing">
-          <div className="wish-count">{handleCount()}</div>
+      <div className='cake' onClick={clickHandler}>
+        <div className='plate' />
+        <div className='layer layer-bottom' />
+        <div className='layer layer-middle' />
+        <div className='layer layer-top' />
+        <div className='icing'>
+          <div className='wish-count'>{handleCount()}</div>
         </div>
-        <div className="drip drip1" />
-        <div className="drip drip2" />
-        <div className="drip drip3" />
-        <div className="candle">
+        <div className='drip drip1' />
+        <div className='drip drip2' />
+        <div className='drip drip3' />
+        <div className='candle'>
           <div className={`flame ${hiddenCss}`} />
         </div>
       </div>

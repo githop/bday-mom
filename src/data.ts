@@ -4,30 +4,30 @@ export interface Wish {
 }
 
 export const photoMap: Record<string, string> = {
-  Greg: require("./img/greg.jpg"),
-  Katya: require("./img/katya.jpg"),
-  Karen: require("./img/karen.jpg"),
-  Freddy: "",
-  Rosamund: "",
-  Adelaide: "",
-  Matilda: "",
-  Nick: "",
-  Michael: "",
-  Tommy: "",
-  "Mary Pat": "",
-  Laura: "",
-  Lisa: "",
-  Kathy: "",
-  Sally: "",
-  Grandma: "",
-  Grandpa: "",
-  Dad: ""
+  Greg: require('./img/greg.jpg'),
+  Katya: require('./img/katya.jpg'),
+  Karen: require('./img/karen.jpg'),
+  Freddy: '',
+  Rosamund: '',
+  Adelaide: '',
+  Matilda: '',
+  Nick: '',
+  Michael: '',
+  Tommy: '',
+  'Mary Pat': '',
+  Laura: '',
+  Lisa: '',
+  Kathy: '',
+  Sally: '',
+  Grandma: '',
+  Grandpa: '',
+  Dad: ''
 };
 
 export const wishes: Wish[] = [
-  { name: "Greg", message: "FaceTime with mom" },
-  { name: "Greg", message: "Mom's tidiness" },
-  { name: "Katya", message: "Her spontaneity" }
+  { name: 'Greg', message: 'FaceTime with mom' },
+  { name: 'Greg', message: "Mom's tidiness" },
+  { name: 'Katya', message: 'Her spontaneity' }
   // { name: "Katya", message: "Her generosity" },
   // { name: "Freddy", message: "Playing with Grandlady" },
   // { name: "Rosamund", message: "Playing peek-a-boo" },
