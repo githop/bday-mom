@@ -21,7 +21,6 @@ interface SetComplete {
 type Actions = SendWish | RemoveWish | SetComplete;
 
 function reducer(state: State, action: Actions): State {
-  console.log(action.type, { state });
   switch (action.type) {
     case 'sendWish': {
       const copy = shuffle([...state.wishList]);
