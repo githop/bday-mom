@@ -14,11 +14,11 @@ var e=arguments[3];Object.defineProperty(exports,"__esModule",{value:!0});var n=
 },{"react":"1n8/","object-assign":"J4Nk","scheduler":"MDSO"}],"NKHc":[function(require,module,exports) {
 "use strict";function _(){if("undefined"!=typeof __REACT_DEVTOOLS_GLOBAL_HOOK__&&"function"==typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.checkDCE){0;try{__REACT_DEVTOOLS_GLOBAL_HOOK__.checkDCE(_)}catch(O){console.error(O)}}}_(),module.exports=require("./cjs/react-dom.production.min.js");
 },{"./cjs/react-dom.production.min.js":"i17t"}],"aOK9":[function(require,module,exports) {
-module.exports="/greg.c6de27c8.jpg";
+module.exports="/src/greg.c6de27c8.jpg";
 },{}],"DTF4":[function(require,module,exports) {
-module.exports="/katya.d0a19e37.jpg";
+module.exports="/src/katya.d0a19e37.jpg";
 },{}],"N4Jx":[function(require,module,exports) {
-module.exports="/karen.03ab05b8.jpg";
+module.exports="/src/karen.03ab05b8.jpg";
 },{}],"+Kmw":[function(require,module,exports) {
 "use strict";Object.defineProperty(exports,"__esModule",{value:!0}),exports.wishes=exports.photoMap=void 0;var e={Greg:require("./img/greg.jpg"),Katya:require("./img/katya.jpg"),Karen:require("./img/karen.jpg"),Freddy:"",Rosamund:"",Adelaide:"",Matilda:"",Nick:"",Michael:"",Tommy:"","Mary Pat":"",Laura:"",Lisa:"",Kathy:"",Sally:"",Grandma:"",Grandpa:"",Dad:""};exports.photoMap=e;var a=[{name:"Greg",message:"FaceTime with mom"},{name:"Greg",message:"Mom's tidiness"},{name:"Katya",message:"Her spontaneity"},{name:"Katya",message:"Her generosity"},{name:"Karen",message:"She is so caring, selfless, and always there to help her children and grandchildren"},{name:"Karen",message:"My mom sets an example to follow of being positive and strong, getting things done and taking responsibility for one's own happiness."},{name:"Karen",message:"Mom is so comforting - she understands who I am and I see her too. She knows what I need and tells me!"}];exports.wishes=a;
 },{"./img/greg.jpg":"aOK9","./img/katya.jpg":"DTF4","./img/karen.jpg":"N4Jx"}],"TKHb":[function(require,module,exports) {
@@ -32,4 +32,4 @@ module.exports="/karen.03ab05b8.jpg";
 },{"react":"1n8/","./data":"+Kmw","react-spring":"aWje"}],"zo2T":[function(require,module,exports) {
 "use strict";var e=u(require("react")),r=require("react-dom"),t=u(require("./app"));function u(e){return e&&e.__esModule?e:{default:e}}(0,r.render)(e.default.createElement(t.default,null),document.getElementById("root"));
 },{"react":"1n8/","react-dom":"NKHc","./app":"owv9"}]},{},["zo2T"], null)
-//# sourceMappingURL=/src.a4f02296.js.map
+//# sourceMappingURL=/src/src.a4f02296.js.map
