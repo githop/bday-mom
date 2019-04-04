@@ -6,7 +6,8 @@
   "license": "MIT",
   "scripts": {
     "start": "parcel src/index.html",
-    "build": "parcel build src/index.html --public-url https://githop.github.io/bday-mom/"
+    "build": "yarn clean && parcel build src/index.html --out-dir docs --public-url ./",
+    "clean": "rm -rf docs"
   },
   "devDependencies": {
     "@types/node": "^11.13.0",
