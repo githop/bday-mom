@@ -1,4 +1,4 @@
-import React, { useReducer, useRef, useEffect } from 'react';
+import React, { useReducer, useRef, useEffect, useCallback } from 'react';
 import { wishes, Wish, photoMap } from './data';
 import { animated, config, useTransition } from 'react-spring';
 
@@ -17,8 +17,11 @@ interface RemoveWish {
 interface SetComplete {
   type: 'complete';
 }
+interface Reset {
+  type: 'reset';
+}
 
-type Actions = SendWish | RemoveWish | SetComplete;
+type Actions = SendWish | RemoveWish | SetComplete | Reset;
 
 function reducer(state: State, action: Actions): State {
   switch (action.type) {
@@ -39,23 +42,29 @@ function reducer(state: State, action: Actions): State {
     case 'complete': {
       return { ...state, isComplete: true };
     }
+    case 'reset': {
+      return { ...initialState };
+    }
     default:
       return state;
   }
 }
 
+const initialState = {
+  wishList: wishes,
+  wishQueue: [],
+  isComplete: false
+};
+
 export default function App() {
-  const [state, dispatch] = useReducer(reducer, {
-    wishList: wishes,
-    wishQueue: [],
-    isComplete: false
-  });
+  const [state, dispatch] = useReducer(reducer, initialState);
 
   const timeoutFn = useRef<any>(null);
   useEffect(() => {
     if (state.wishQueue.length !== 0) {
       if (state.wishQueue.length > 2) {
         dispatch({ type: 'removeWish' });
+        return;
       }
       const wordCount =
         (state.wishQueue[state.wishQueue.length - 1].message.split(' ').length /
@@ -89,22 +98,39 @@ export default function App() {
 
   const endTransition = useTransition(state.isComplete, null, {
     from: { transform: `translate(0, 200%)`, opacity: 0 },
-    enter: { transform: `translate(0, 0%)`, opacity: 0.8 },
+    enter: { transform: `translate(0, 0%)`, opacity: 1 },
     leave: { transform: `translate(0, 100%)`, opacity: 0 },
     config: config.slow
   });
 
+  const textTransition = useTransition(state.wishList.length !== 0, null, {
+    from: { transform: `translate(0, 200%)`, opacity: 0 },
+    enter: { transform: `translate(0, 0%)`, opacity: 1 },
+    leave: { transform: `translate(0, 100%)`, opacity: 0 },
+    config: config.stiff
+  });
+
+  const animatedGreeting = textTransition.map(
+    ({ item, key, props }) =>
+      item && (
+        <animated.div key={key} style={props}>
+          <h1>60 reasons why we love you!</h1>
+        </animated.div>
+      )
+  );
+
   const hiddenCss =
     state.wishQueue.length > 0 || state.wishList.length === 0 ? '--hidden' : '';
 
-  const clickHandler = React.useCallback(
-    (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-      if (state.wishList.length > 0) {
-        dispatch({ type: 'sendWish' });
-      }
-    },
-    [state.wishList.length, state.wishQueue.length, dispatch]
-  );
+  const clickHandler = useCallback(() => {
+    if (state.isComplete) {
+      dispatch({ type: 'reset' });
+      return;
+    }
+    if (state.wishList.length > 0) {
+      dispatch({ type: 'sendWish' });
+    }
+  }, [state.wishList.length, state.isComplete, dispatch]);
 
   const animatedWish = wishTransition.map(({ item, key, props }) => {
     return (
@@ -125,8 +151,10 @@ export default function App() {
   const animatedEnd = endTransition.map(
     ({ item, key, props }) =>
       item && (
-        <animated.div key={key} style={props}>
+        <animated.div className='ending' key={key} style={props}>
           <h1>Happy 60th Mom!</h1>
+          <p>We love you!</p>
+          <img src={photoMap['family']} />
         </animated.div>
       )
   );
@@ -135,21 +163,17 @@ export default function App() {
     if (state.wishList.length > 60) {
       return state.wishList.length - 60;
     }
+
+    if (state.wishList.length === 0) {
+      return '';
+    }
+
     return state.wishList.length;
   };
 
   return (
     <>
-      <div className='bday-message__wrapper'>
-        <h1>60 reasons why we love you!</h1>
-        <p>Click the cake to blow out your candle!</p>
-        <div className='bday-message'>
-          {animatedWish}
-          {animatedEnd}
-        </div>
-      </div>
-
-      <div className='cake' onClick={clickHandler}>
+      <div className='cake'>
         <div className='plate' />
         <div className='layer layer-bottom' />
         <div className='layer layer-middle' />
@@ -162,6 +186,16 @@ export default function App() {
         <div className='drip drip3' />
         <div className='candle'>
           <div className={`flame ${hiddenCss}`} />
+        </div>
+      </div>
+      <div className='bday-message__wrapper'>
+        {animatedGreeting}
+        <button className='wish-btn' onClick={clickHandler}>
+          {!state.isComplete ? 'Make a wish' : 'Star over'}
+        </button>
+        <div className='bday-message'>
+          {animatedWish}
+          {animatedEnd}
         </div>
       </div>
     </>

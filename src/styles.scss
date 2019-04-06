@@ -26,15 +26,18 @@ body {
     0 26px 0px darken($color, 10.4%), 0 28px 0px darken($color, 10.6%),
     0 30px 0px darken($color, 10.8%);
 }
+#root {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+}
 
 .cake {
-  position: absolute;
+  // position: relative;
   width: 250px;
   height: 200px;
-  bottom: 22px;
-  left: 50%;
-  margin-top: -70px;
-  margin-left: -125px;
+  transform: scale(0.5);
 }
 
 .plate {
@@ -209,6 +212,9 @@ $borderRadius: 4px;
 .bday-message__wrapper {
   text-align: center;
   color: $candle;
+  margin-top: -40px;
+  padding: 0 0.5rem;
+  width: 100%;
 }
 
 .bday-message {
@@ -268,5 +274,17 @@ $borderRadius: 4px;
   p {
     font-style: italic;
     font-size: 20px;
+  }
+}
+
+.wish-btn {
+  border-radius: $borderRadius;
+  padding: 5px 10px;
+  margin: 5px;
+}
+
+.ending {
+  img {
+    max-width: 75%;
   }
 }
